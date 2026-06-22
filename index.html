@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraVoice ID - Speaker Verification Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="glow-container"></div>
+    
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                    <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                </svg>
+                <div class="logo-text">
+                    <h1>AURAVOICE <span class="accent-text">ID</span></h1>
+                    <span class="sub-logo">BIOMETRIC CALL VERIFICATION SYSTEM</span>
+                </div>
+            </div>
+            <div class="system-status">
+                <span class="status-label">SYS_STATUS:</span>
+                <span class="status-value active" id="system-status-text">STANDBY</span>
+                <span class="status-indicator active" id="system-status-dot"></span>
+            </div>
+        </header>
+
+        <!-- DASHBOARD GRID -->
+        <div class="dashboard-grid">
+            
+            <!-- LEFT PANEL: ENROLLMENT & PROFILES -->
+            <section class="panel-card left-panel">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <line x1="19" y1="8" x2="19" y2="14"></line>
+                        <line x1="22" y1="11" x2="16" y2="11"></line>
+                    </svg>
+                    <h2>Voice Enrollment</h2>
+                </div>
+                
+                <div class="panel-body">
+                    <!-- Enroll Form -->
+                    <div class="enroll-form">
+                        <p class="description-text">Register a new person's vocal signature to the biometric database.</p>
+                        <div class="input-group">
+                            <label for="enroll-name">Person's Name</label>
+                            <input type="text" id="enroll-name" placeholder="e.g., Alice Vance" autocomplete="off">
+                        </div>
+                        
+                        <div class="passphrase-hint">
+                            <span class="hint-title">PASSKEY SENTENCE TO SPEAK:</span>
+                            <div class="speech-box">
+                                "My voice is my identity, grant me secure access."
+                            </div>
+                        </div>
+
+                        <!-- Enroll Control Button -->
+                        <button id="btn-enroll-record" class="btn btn-primary">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>Enroll Voiceprint</span>
+                        </button>
+                    </div>
+
+                    <!-- Voiceprints Database List -->
+                    <div class="enrolled-database">
+                        <div class="section-title">
+                            <h3>Enrolled Signatures</h3>
+                            <span class="counter-badge" id="enrolled-count">0</span>
+                        </div>
+                        
+                        <div class="database-list" id="database-list">
+                            <!-- Dynamically filled -->
+                            <div class="empty-state">
+                                <p>No enrolled voiceprints found in database.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER PANEL: LIVE SIMULATOR -->
+            <section class="panel-card center-panel">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    <h2>Live Call Security Terminal</h2>
+                </div>
+
+                <div class="panel-body call-terminal-body">
+                    <!-- Default State: Simulate Call -->
+                    <div class="call-simulation-controls" id="sec-simulation-start">
+                        <div class="simulate-card">
+                            <div class="caller-avatar-glow">
+                                <svg viewBox="0 0 24 24" width="60" height="60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </div>
+                            <h3>Biometric Verification Test</h3>
+                            <p class="description-text">Simulate an incoming phone call to record and verify the identity of the speaker against the database.</p>
+                            <button id="btn-simulate-call" class="btn btn-accent btn-large">
+                                <span>Simulate Incoming Call</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Call UI -->
+                    <div class="active-call-interface hidden" id="sec-call-active">
+                        <!-- Ringing / Connected Header -->
+                        <div class="call-header">
+                            <span class="call-label" id="call-label">INCOMING CALL...</span>
+                            <span class="call-timer" id="call-timer">00:00</span>
+                        </div>
+
+                        <!-- Caller Visual representation -->
+                        <div class="caller-representation">
+                            <!-- Visual Ring Pulsers -->
+                            <div class="pulsing-circles" id="pulse-rings">
+                                <div class="ring r1"></div>
+                                <div class="ring r2"></div>
+                                <div class="ring r3"></div>
+                            </div>
+                            <div class="visualizer-wrapper">
+                                <!-- Wave Oscilloscope Canvas -->
+                                <canvas id="canvas-oscilloscope"></canvas>
+                                <!-- Circle Spectrum Radar -->
+                                <canvas id="canvas-radar" class="hidden"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Speech Prompt instructions -->
+                        <div class="call-speech-instruction hidden" id="call-speech-prompt">
+                            <span class="prompt-header">INSTRUCTION FOR CALLER:</span>
+                            <p class="prompt-text">Speak the verification passphrase clearly:</p>
+                            <div class="prompt-box">"My voice is my identity, grant me secure access."</div>
+                        </div>
+
+                        <!-- Call Buttons -->
+                        <div class="call-controls">
+                            <button id="btn-decline" class="btn btn-danger btn-circle" title="Decline Call">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M21 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135 12 12)"></path>
+                                </svg>
+                            </button>
+                            <button id="btn-answer" class="btn btn-success btn-circle btn-glowing" title="Answer Call">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M2 22a10 10 0 0 1 20 0H2zm10-12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" style="display: none;"></path>
+                                    <path d="M21 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </button>
+                            <button id="btn-hangup" class="btn btn-danger btn-circle hidden" title="End & Analyze">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M21 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135 12 12)"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Verification Results Display -->
+                    <div class="verification-results hidden" id="sec-call-results">
+                        <div class="result-header">
+                            <span class="tag">ANALYSIS RESULT</span>
+                            <button class="btn btn-secondary btn-small" id="btn-close-results">Back to Console</button>
+                        </div>
+                        
+                        <div class="result-overview">
+                            <div class="gauge-column">
+                                <div class="match-gauge">
+                                    <svg viewBox="0 0 36 36" class="circular-chart">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <path class="circle" id="result-match-stroke" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <text x="18" y="20.35" class="percentage" id="result-match-pct">0%</text>
+                                    </svg>
+                                    <span class="gauge-label">MATCH SCORE</span>
+                                </div>
+                            </div>
+                            
+                            <div class="details-column">
+                                <div class="status-shield" id="result-status-shield">
+                                    <!-- Dynamic Icon -->
+                                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    </svg>
+                                </div>
+                                <h3 id="result-title">VERIFYING SPEAKER</h3>
+                                <p class="result-subtitle" id="result-subtitle">Extracting biometrics...</p>
+                                
+                                <div class="details-list">
+                                    <div class="detail-row">
+                                        <span>Fundamental Pitch:</span>
+                                        <span class="val" id="res-detail-pitch">--</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Timbre Sim (Spectral):</span>
+                                        <span class="val" id="res-detail-timbre">--</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Brightness Sim (Centroid):</span>
+                                        <span class="val" id="res-detail-centroid">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graphical comparison: Registered Voice vs Caller Voice -->
+                        <div class="comparison-chart-container">
+                            <span class="chart-title">AURA-FREQUENCY SPECTRUM MATCH OVERLAY</span>
+                            <canvas id="canvas-comparison"></canvas>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="legend-dot registered"></span>Registered Signature</span>
+                                <span class="legend-item"><span class="legend-dot caller"></span>Incoming Caller</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: CALL HISTORY LOGS -->
+            <section class="panel-card right-panel">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="4" x2="10" y2="4"></line>
+                        <line x1="14" y1="20" x2="10" y2="20"></line>
+                        <line x1="15" y1="12" x2="10" y2="12"></line>
+                        <path d="M12 2A10 10 0 0 0 2 12a9.9 9.9 0 0 0 2.5 6.5L2 22l3.5-2.5A9.9 9.9 0 0 0 12 22a10 10 0 0 0 10-10H12V2z"></path>
+                    </svg>
+                    <h2>Verification Logs</h2>
+                    <button class="btn btn-secondary btn-small" id="btn-clear-logs" title="Clear all logs">Clear</button>
+                </div>
+
+                <div class="panel-body">
+                    <p class="description-text">Audit trail of verified and unverified calls.</p>
+                    
+                    <div class="audit-trail" id="audit-trail-list">
+                        <!-- Dynamic content -->
+                        <div class="empty-state">
+                            <p>No call logs recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- SPEECH TO ENROLL RECORDING OVERLAY (MODAL) -->
+    <div class="overlay-modal hidden" id="modal-recording">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Recording Voice Signature</h2>
+                <span class="modal-status">ACTIVE RECORDER</span>
+            </div>
+            <div class="modal-body">
+                <p>Speak the passphrase clearly for calibration. Keep speaking for the entire duration:</p>
+                <div class="modal-phrase">
+                    "My voice is my identity, grant me secure access."
+                </div>
+                
+                <div class="recording-visual">
+                    <div class="recording-spinner">
+                        <div class="pulse-wave"></div>
+                        <div class="timer-countdown" id="recording-countdown">5</div>
+                    </div>
+                    <canvas id="canvas-enroll-visualizer"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="warning-alert">Please minimize background noise.</span>
+                <button class="btn btn-secondary" id="btn-cancel-enroll">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="audio-processor.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
