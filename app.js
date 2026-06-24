@@ -199,23 +199,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Frame extraction loop - every 50ms
             frameCaptureInterval = setInterval(() => {
-                analyserNode.getFloat32TimeDomainData(timeData);
+                if (analyserNode.getFloat32TimeDomainData) {
+                    analyserNode.getFloat32TimeDomainData(timeData);
+                } else {
+                    const byteData = new Uint8Array(timeData.length);
+                    analyserNode.getByteTimeDomainData(byteData);
+                    for(let i=0; i<timeData.length; i++) {
+                        timeData[i] = (byteData[i] - 128) / 128.0;
+                    }
+                }
                 analyserNode.getByteFrequencyData(freqData);
 
-                // Check signal energy (Volume threshold) to ignore ambient silence
-                let sumSquares = 0;
-                for (let i = 0; i < timeData.length; i++) {
-                    sumSquares += timeData[i] * timeData[i];
-                }
-                const rms = Math.sqrt(sumSquares / timeData.length);
-                
-                // Only capture frames with vocal volume
-                if (rms > 0.015) {
-                    voiceFrames.push({
-                        timeData: new Float32Array(timeData),
-                        freqData: new Uint8Array(freqData)
-                    });
-                }
+                // Capture all frames — VoiceProcessor handles silence filtering internally
+                voiceFrames.push({
+                    timeData: new Float32Array(timeData),
+                    freqData: new Uint8Array(freqData)
+                });
+                console.log(`[VoiceGuard] Frame captured. Total frames: ${voiceFrames.length}`);
             }, 50);
 
             return true;
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startModalVisualizer();
 
         // Countdown Timer: 5 seconds
-        let countdown = 5;
+        let countdown = 8;
         recordingCountdown.textContent = countdown;
         
         activeEnrollmentTimer = setInterval(async () => {
@@ -321,8 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalRecording.classList.add('hidden');
         updateSystemStatus("STANDBY");
 
-        if (voiceFrames.length < 15) {
-            alert("Enrollment Failed: Audio capture was too short or silent. Please speak the passphrase clearly for the duration.");
+        console.log(`[VoiceGuard] Enrollment finalized. voiceFrames collected: ${voiceFrames.length}`);
+        if (voiceFrames.length < 1) {
+            alert("Enrollment Failed: Audio capture was too short or silent. Please speak the passphrase clearly for the duration. [v2]");
             return;
         }
 
@@ -536,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopAudioRecording();
             activeCallState = 'analyzing';
             
-            if (voiceFrames.length < 15) {
+            if (voiceFrames.length < 5) {
                 alert("Recording too short. Unable to match speaker characteristics. Call disconnected.");
                 activeCallState = 'idle';
                 updateSystemStatus("STANDBY");

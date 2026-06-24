@@ -43,7 +43,7 @@ class VoiceProcessor {
             sumOfSquares += timeData[i] * timeData[i];
         }
         const rms = Math.sqrt(sumOfSquares / bufferSize);
-        if (rms < 0.015) return null; // Signal is too quiet (silence/noise)
+        if (rms < 0.005) return null; // Signal is too quiet (silence/noise)
 
         // Trim signal to focus on active part (autocorrelation search boundaries)
         let r1 = 0;
