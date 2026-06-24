@@ -242,34 +242,64 @@ class VoiceProcessor {
     }
 
     /**
+     * Compute Pearson correlation between two numeric arrays of equal length.
+     */
+    static pearsonCorrelation(vecA, vecB) {
+        let meanA = 0;
+        let meanB = 0;
+        for (let i = 0; i < vecA.length; i++) {
+            meanA += vecA[i];
+            meanB += vecB[i];
+        }
+        meanA /= vecA.length;
+        meanB /= vecB.length;
+
+        let dotProduct = 0;
+        let normA = 0;
+        let normB = 0;
+        for (let i = 0; i < vecA.length; i++) {
+            let valA = vecA[i] - meanA;
+            let valB = vecB[i] - meanB;
+            dotProduct += valA * valB;
+            normA += valA * valA;
+            normB += valB * valB;
+        }
+        if (normA === 0 || normB === 0) return 0;
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    /**
      * Compares two voiceprints and returns a similarity score profile.
      */
     static compareVoiceprints(vp1, vp2) {
         if (!vp1 || !vp2) return { score: 0, details: {} };
 
         // 1. Spectral bands similarity (main indicator of vocal tract shape)
-        const spectralSimilarity = this.cosineSimilarity(vp1.bands, vp2.bands);
+        // Use Pearson correlation to center the data, making it more discriminative
+        let rawSpectral = this.pearsonCorrelation(vp1.bands, vp2.bands);
+        const spectralSimilarity = Math.max(0, rawSpectral);
 
         // 2. Pitch similarity (speaker fundamental frequency)
         let pitchSimilarity = 1.0;
         let pitchDiffHz = null;
         if (vp1.pitch && vp2.pitch) {
             pitchDiffHz = Math.abs(vp1.pitch - vp2.pitch);
-            // Allow up to 25Hz difference with no penalty, then scale down
-            const diffFactor = Math.max(0, pitchDiffHz - 25);
-            pitchSimilarity = Math.max(0.6, 1.0 - (diffFactor / 180));
+            // Allow up to 15Hz difference with no penalty, then scale down steeply
+            const diffFactor = Math.max(0, pitchDiffHz - 15);
+            pitchSimilarity = Math.max(0.0, 1.0 - (diffFactor / 80));
         } else {
-            // Pitch missing in one or both, neutral similarity contribution
-            pitchSimilarity = 0.85; 
+            // Pitch missing in one or both, strong penalty
+            pitchSimilarity = 0.3; 
         }
 
         // 3. Spectral Centroid similarity
         const centroidRatio = Math.min(vp1.centroid, vp2.centroid) / Math.max(vp1.centroid, vp2.centroid);
-        const centroidSimilarity = Math.max(0.7, centroidRatio);
+        // Scale centroid similarity so differences are more pronounced
+        const centroidSimilarity = Math.max(0.0, (centroidRatio - 0.7) * 3.33);
 
         // Combined Score: 
-        // 75% Spectral bands, 15% Pitch similarity, 10% Centroid similarity
-        let finalScore = (spectralSimilarity * 0.75) + (pitchSimilarity * 0.15) + (centroidSimilarity * 0.10);
+        // 60% Spectral bands, 25% Pitch similarity, 15% Centroid similarity
+        let finalScore = (spectralSimilarity * 0.60) + (pitchSimilarity * 0.25) + (centroidSimilarity * 0.15);
 
         // Convert to percentage and cap
         let percentageScore = Math.round(finalScore * 100);
